@@ -43,15 +43,14 @@ done
 
 case $TASK in
     init)
-        {
-            if [ -z ${PROBLEM+x} ]; then
-                if [ -z ${REST+x} ]; then
-                    echo "Problem ID  must be specified."
-                    exit 1
-                fi
-                PROBLEM=$REST
+        if [ -z ${PROBLEM+x} ]; then
+            if [ -z ${REST+x} ]; then
+                echo "Problem ID  must be specified."
+                exit 1
             fi
-
+            PROBLEM=$REST
+        fi
+        {
             /bin/mkdir $PROBLEM
             cd $PROBLEM
             SAMPLE_URL="https://open.kattis.com/problems/${PROBLEM}/file/statement/samples.zip"
