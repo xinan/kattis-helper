@@ -121,7 +121,14 @@ case $TASK in
             fi
         done
         ;;
+    goto)
+        DOMAIN=$REST
+        /bin/sed -r -i "s/https:\/\/\\w+.kattis.com/https:\/\/${DOMAIN}.kattis.com/g" ~/.kattisrc
+        ;;
+    whereami)
+        echo $(/bin/grep -oP "\w+(?=.kattis.com/login)" ~/.kattisrc)
+        ;;
     *)
-        echo -e "Usage:\n\t$0 init <problem>\n\t$0 submit <file>"
+        echo -e "Usage:\n\t$0 init <problem>\n\t$0 submit|test <file>\n\t$0 switch <domain>"
         ;;
 esac
