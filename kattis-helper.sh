@@ -120,6 +120,10 @@ case $TASK in
                 echo $OUTPUT
             fi
         done
+        {
+            rm $PROBLEM
+            rm $PROBLEM.class
+        } &> /dev/null
         ;;
     goto)
         DOMAIN=$REST
