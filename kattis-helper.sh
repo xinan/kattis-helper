@@ -2,11 +2,11 @@
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
-    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
     SOURCE="$(readlink "$SOURCE")"
     [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
 done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 SUBMIT="${DIR}/kattis-cli/submit.py"
 
 TASK="$1"
@@ -51,12 +51,12 @@ case $TASK in
             PROBLEM=$REST
         fi
         {
-            /bin/mkdir $PROBLEM
+            mkdir $PROBLEM
             cd $PROBLEM
             SAMPLE_URL="https://open.kattis.com/problems/${PROBLEM}/file/statement/samples.zip"
             wget $SAMPLE_URL || curl -O $SAMPLE_URL
-            /usr/bin/unzip -o samples.zip
-            /bin/rm samples.zip
+            unzip -o samples.zip
+            rm samples.zip
         } &> /dev/null
         echo "Problem initialized in \"./${PROBLEM}\". Good luck!"
         ;;
@@ -69,7 +69,7 @@ case $TASK in
             FILE=$REST
         fi
 
-        CMD="/usr/bin/env python ${SUBMIT} ${FILE}"
+        CMD="python ${SUBMIT} ${FILE}"
         if [ ! -z ${PROBLEM+x} ]; then
             CMD="$CMD -p $PROBLEM"
         fi
@@ -96,15 +96,15 @@ case $TASK in
         PROBLEM="${FILE%.*}"
         case $EXT in
             cpp)
-                /usr/bin/g++ -Wall -std=c++11 $FILE -o $PROBLEM
+                g++ -Wall -std=c++11 $FILE -o $PROBLEM
                 CMD="./$PROBLEM"
                 ;;
             java)
-                /usr/bin/javac $FILE
-                CMD="/usr/bin/java $PROBLEM"
+                javac $FILE
+                CMD="java $PROBLEM"
                 ;;
             py)
-                CMD="/usr/bin/python $FILE"
+                CMD="python $FILE"
                 ;;
             *)
                 echo "Unsupported language :("
@@ -114,19 +114,19 @@ case $TASK in
             CASENAME="${i%.*}"
             OUTPUT=$(eval "$CMD < $i | diff $CASENAME.ans -")
             if [[ -z "${OUTPUT}" ]]; then
-                echo "======== $CASENAME passed! ========"
+                echo "========= $CASENAME passed! ========="
             else
-                echo "======== $CASENAME failed! ========"
+                echo "========= $CASENAME failed! ========="
                 echo $OUTPUT
             fi
         done
         ;;
     goto)
         DOMAIN=$REST
-        /bin/sed -r -i "s/https:\/\/\\w+.kattis.com/https:\/\/${DOMAIN}.kattis.com/g" ~/.kattisrc
+        sed -r -i "s/https:\/\/\\w+.kattis.com/https:\/\/${DOMAIN}.kattis.com/g" ~/.kattisrc
         ;;
     whereami)
-        echo $(/bin/grep -oP "\w+(?=.kattis.com/login)" ~/.kattisrc)
+        echo $(grep -oP "\w+(?=.kattis.com/login)" ~/.kattisrc)
         ;;
     *)
         echo -e "Usage:\n\t$0 init <problem>\n\t$0 submit|test <file>\n\t$0 switch <domain>"
