@@ -84,6 +84,43 @@ case $TASK in
         fi
         eval $CMD
         ;;
+    test)
+        if [ -z ${FILE+x} ]; then
+            if [ -z ${REST+x} ]; then
+                echo "File name must be specified."
+                exit 2
+            fi
+            FILE=$REST
+        fi
+        EXT="${FILE##*.}"
+        PROBLEM="${FILE%.*}"
+        case $EXT in
+            cpp)
+                /usr/bin/g++ -Wall -std=c++11 $FILE -o $PROBLEM
+                CMD="./$PROBLEM"
+                ;;
+            java)
+                /usr/bin/javac $FILE
+                CMD="/usr/bin/java $PROBLEM"
+                ;;
+            py)
+                CMD="/usr/bin/python $FILE"
+                ;;
+            *)
+                echo "Unsupported language :("
+                exit 3
+        esac
+        for i in *.in; do
+            CASENAME="${i%.*}"
+            OUTPUT=$(eval "$CMD < $i | diff $CASENAME.ans -")
+            if [[ -z "${OUTPUT}" ]]; then
+                echo "======== $CASENAME passed! ========"
+            else
+                echo "======== $CASENAME failed! ========"
+                echo $OUTPUT
+            fi
+        done
+        ;;
     *)
         echo -e "Usage:\n\t$0 init <problem>\n\t$0 submit <file>"
         ;;
